@@ -1,0 +1,72 @@
+version: '2.2'
+
+networks:
+  inside:
+  ingress:
+    external: true
+
+services:
+
+  db:
+    networks:
+      - inside
+    ports:
+      - "5432:5432"
+
+  rabbitmq:
+    networks:
+      - inside
+
+  geoserver:
+    environment:
+      - GEONODE_LB_HOST_IP=87.252.173.51
+      - GEONODE_LB_PORT=80
+    networks:
+      - inside
+
+  django:
+    volumes:
+      - type: tmpfs
+        target: /tmp
+        tmpfs:
+          size: 10737418240 # 10GB in bytes
+    environment:
+      - DEBUG=False
+#      - GEONODE_LB_HOST_IP=87.252.173.51
+      - GEONODE_LB_HOST_IP=192.168.1.101
+      - GEONODE_LB_PORT=80
+      - SITEURL=https://gis.bspb.org/
+      - ALLOWED_HOSTS=['gis.bspb.org', ]
+      - GEOSERVER_PUBLIC_LOCATION=https://gis.bspb.org/geoserver/
+      - GEOSERVER_WEB_UI_LOCATION=https://gis.bspb.org/geoserver/
+    networks:
+      - inside
+
+  celery:
+    environment:
+      - DEBUG=False
+#      - GEONODE_LB_HOST_IP=87.252.173.51
+      - GEONODE_LB_HOST_IP=192.168.1.101
+      - GEONODE_LB_PORT=80
+      - SITEURL=https://gis.bspb.org/
+      - ALLOWED_HOSTS=['gis.bspb.org', ]
+      - GEOSERVER_PUBLIC_LOCATION=https://gis.bspb.org/geoserver/
+      - GEOSERVER_WEB_UI_LOCATION=https://gis.bspb.org/geoserver/
+    networks:
+      - inside
+
+  geonode:
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.geonode.entrypoints=http, https"
+      - "traefik.http.routers.geonode.rule=Host(`gis.bspb.org`)"
+      - "traefik.http.routers.geonode.tls.certResolver=default"
+      - "traefik.http.services.geonode.loadbalancer.server.port=80"
+    image: geonode/nginx:production
+    networks:
+      - inside
+      - ingress
+
+  data-dir-conf:
+    networks:
+      - inside
