@@ -1,0 +1,27 @@
+#!/bin/bash
+
+./dc run --entrypoint /bin/bash django <<EOC
+
+echo "deb http://apt.postgresql.org/pub/repos/apt/ buster-pgdg main" | tee  /etc/apt/sources.list.d/pgdg.list
+
+apt-get update -y --allow-releaseinfo-change
+
+apt-get -y install postgresql-client-13
+
+python manage.py backup --backup-dir=/backup_restore --config=/usr/src/geonode/geonode/br/management/commands/settings_docker_sample.ini --force $@
+
+EOC
+
+BACKUP_HOST_DIR=`docker volume inspect geonode3-backup-restore | jq '.[0].Mountpoint'`
+
+echo "Backup should be complete - you can find it in
+
+  sudo ls -lart ${BACKUP_HOST_DIR}
+
+and then copy with
+
+  sudo cp ${BACKUP_HOST_DIR}/XXXXX.ini .
+  sudo cp ${BACKUP_HOST_DIR}/XXXXX.md5 .
+  sudo cp ${BACKUP_HOST_DIR}/XXXXX.zip .
+
+"
