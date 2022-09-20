@@ -1,0 +1,13 @@
+#!/bin/bash
+
+set -x
+
+source .env
+
+dc="docker-compose -f docker-compose.base.yml"
+
+if [ ! -z "${SET_DOCKER_ENV}" ]; then
+  dc="${dc} -f docker-compose.override.${SET_DOCKER_ENV}.yml"
+fi
+
+$dc $@
