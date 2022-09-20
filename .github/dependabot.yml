@@ -1,0 +1,32 @@
+version: 2
+
+updates:
+  - package-ecosystem: "docker"
+    directory: "/docker/geonode"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/geoserver"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/geoserver_data"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/nginx"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/postgis"
+    schedule:
+      interval: "monthly"
+
+  - package-ecosystem: "docker"
+    directory: "/docker/rabbitmq"
+    schedule:
+      interval: "monthly"
