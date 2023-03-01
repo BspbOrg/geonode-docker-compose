@@ -1,1 +1,1 @@
-FROM geonode/geoserver_data:2.17.2
+FROM geonode/geoserver_data:2.20.7
